@@ -2,6 +2,7 @@ package br.com.juwer.algafoodclient.api;
 
 import br.com.juwer.algafoodclient.model.RestauranteResumoModel;
 import lombok.AllArgsConstructor;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
@@ -17,10 +18,15 @@ public class RestauranteClient {
     private String url;
 
     public List<RestauranteResumoModel> listar(){
-        URI resourceUri = URI.create(url + RESOURCE_PATH);
-        RestauranteResumoModel[] resumoModel = restTemplate
-                .getForObject(resourceUri, RestauranteResumoModel[].class);
+        try {
+            URI resourceUri = URI.create(url + RESOURCE_PATH);
+            RestauranteResumoModel[] resumoModel = restTemplate
+                    .getForObject(resourceUri, RestauranteResumoModel[].class);
 
-        return Arrays.asList(resumoModel);
+            return Arrays.asList(resumoModel);
+        } catch(RestClientResponseException e) {
+            throw new ClientApiException(e.getMessage(), e);
+        }
+
     }
 }
